@@ -28,12 +28,9 @@ public class SellerDaoJDBC implements SellerDao {
 	public void insert(Seller seller) {
 
 		PreparedStatement pst = null;
-
 		try {
-			pst = connection.prepareStatement(
-
-					"INSERT INTO seller " + "(Name, Email, BirthDate, BaseSalary, DepartmentId) " + "VALUES "
-							+ "(?, ?, ?, ?, ?)",
+			pst = connection.prepareStatement("INSERT INTO seller "
+					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId) " + "VALUES " + "(?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 
 			pst.setString(1, seller.getName());
@@ -43,7 +40,6 @@ public class SellerDaoJDBC implements SellerDao {
 			pst.setInt(5, seller.getDepartment().getId());
 
 			int rowsAffected = pst.executeUpdate();
-
 			if (rowsAffected > 0) {
 				ResultSet rs = pst.getGeneratedKeys();
 				if (rs.next()) {
@@ -65,12 +61,9 @@ public class SellerDaoJDBC implements SellerDao {
 	public void update(Seller seller) {
 
 		PreparedStatement pst = null;
-
 		try {
-			pst = connection.prepareStatement(
-
-					"UPDATE seller " + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
-							+ "WHERE Id = ? ");
+			pst = connection.prepareStatement("UPDATE seller "
+					+ "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? " + "WHERE Id = ? ");
 
 			pst.setString(1, seller.getName());
 			pst.setString(2, seller.getEmail());
@@ -78,7 +71,6 @@ public class SellerDaoJDBC implements SellerDao {
 			pst.setDouble(4, seller.getBaseSalary());
 			pst.setInt(5, seller.getDepartment().getId());
 			pst.setInt(6, seller.getId());
-
 			pst.executeUpdate();
 
 		} catch (SQLException e) {
@@ -92,15 +84,11 @@ public class SellerDaoJDBC implements SellerDao {
 	public void deleteById(Integer id) {
 
 		PreparedStatement pst = null;
-
 		try {
-			pst = connection.prepareStatement(
+			pst = connection.prepareStatement("DELETE FROM seller " + "WHERE Id = ?");
 
-					"DELETE FROM seller " + "WHERE Id = ?");
 			pst.setInt(1, id);
-
 			int rowsAffected = pst.executeUpdate();
-
 			if (rowsAffected == 0) {
 				throw new DbException("Unexpected error! no rows affected!");
 			}
@@ -116,16 +104,13 @@ public class SellerDaoJDBC implements SellerDao {
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-
 		try {
 			pst = connection.prepareStatement(
-
 					"SELECT seller.*,department.Name as DepName " + "FROM seller INNER JOIN department "
 							+ "ON seller.DepartmentId = department.Id " + "WHERE seller.Id = ?");
 
 			pst.setInt(1, id);
 			rs = pst.executeQuery();
-
 			if (rs.next()) {
 				Department dep = instantiateDepartment(rs);
 				Seller obj = instantiateSeller(rs, dep);
@@ -170,22 +155,17 @@ public class SellerDaoJDBC implements SellerDao {
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-
 		try {
 			pst = connection.prepareStatement(
-
 					"SELECT seller.*,department.Name as DepName " + "FROM seller INNER JOIN department "
 							+ "ON seller.DepartmentId = department.Id " + "ORDER BY Name");
 
 			rs = pst.executeQuery();
-
 			List<Seller> list = new ArrayList<>();
 			Map<Integer, Department> map = new HashMap<>();
-
 			while (rs.next()) {
 
 				Department dep = map.get(rs.getInt("DepartmentId"));
-
 				if (dep == null) {
 					dep = instantiateDepartment(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
@@ -208,23 +188,19 @@ public class SellerDaoJDBC implements SellerDao {
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-
 		try {
 			pst = connection.prepareStatement(
-
 					"SELECT seller.*,department.Name as DepName " + "FROM seller INNER JOIN department "
 							+ "ON seller.DepartmentId = department.Id " + "WHERE DepartmentId = ? " + "ORDER BY Name");
 
 			pst.setInt(1, department.getId());
 			rs = pst.executeQuery();
-
 			List<Seller> list = new ArrayList<>();
 			Map<Integer, Department> map = new HashMap<>();
 
 			while (rs.next()) {
 
 				Department dep = map.get(rs.getInt("DepartmentId"));
-
 				if (dep == null) {
 					dep = instantiateDepartment(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
